@@ -25,7 +25,7 @@ const LoginScreen = () => {
         console.log("Login Request URL: ", requestUrl);
     
         // Log the request body
-        console.log("Request Body:", JSON.stringify(requestBody));
+        console.log("Login Request Body:", JSON.stringify(requestBody));
         try {
             const response = await fetch(requestUrl, {
                 method: 'POST',
@@ -38,7 +38,7 @@ const LoginScreen = () => {
             const data = await response.json();
     
             // Log the response
-            console.log('Response:', data);
+            console.log('Login Response:', JSON.stringify(data));
     
             if (response.ok) {
                 // Handle successful login
@@ -51,11 +51,14 @@ const LoginScreen = () => {
                 }
 
                 // Save user data to Redux
-                dispatch(setUser(data));
+                dispatch(setUser(JSON.stringify(data)));
 
                 // Save user data to AsyncStorage
+                console.log("login user data in login page ::: ", JSON.stringify(data))
                 await AsyncStorage.setItem('user', JSON.stringify(data));
                 // Reset navigation stack to ensure HomeScreen is refreshed
+                const storedData = await AsyncStorage.getItem('user');
+                console.log("Stored user data in AsyncStorage: ", storedData);
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Home' }],

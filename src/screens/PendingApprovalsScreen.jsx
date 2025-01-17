@@ -9,7 +9,7 @@ const PendingApprovalsScreen = ({ route }) => {
 
     const handleApprove = async (userId, dealerId) => {
         try {
-            const requestUrl = `${config.API_URL}/ams/v1/user/${userId}/${dealerId}`;
+            const requestUrl = `${config.API_URL}/ams/v1/user/${userId}/${config.DEALER_UID}`;
             console.log("approve user url: "+ requestUrl);
             const response = await fetch(requestUrl, {
                 method: 'PUT',
@@ -55,7 +55,6 @@ const PendingApprovalsScreen = ({ route }) => {
         }
     };
 
-
     const renderItem = ({ item }) => (
         <View style={styles.itemContainer}>
             <Text style={styles.userName}>{item.name}</Text>
@@ -64,27 +63,36 @@ const PendingApprovalsScreen = ({ route }) => {
             <Text style={styles.userInfo}>Status: {item.userStatus}</Text>
             <Text style={styles.userInfo}>Role: {item.role}</Text>
             <Text style={styles.userInfo}>Address: {item.address.street}, {item.address.city}, {item.address.state}, {item.address.pinCode}</Text>
-             <View style={styles.buttonContainer}>
-             <TouchableOpacity style={styles.button} onPress={() => handleReject(item.userId)}>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={styles.button} onPress={() => handleReject(item.userId)}>
                     <Text style={styles.buttonText}>Reject</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => handleApprove(item.userId, '958b2a2e-04f8-43ec-95af-5972bee3fcd4')}>
+                <TouchableOpacity style={styles.button} onPress={() => handleApprove(item.userId)}>
                     <Text style={styles.buttonText}>Approve</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
 
-    return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Pending Approvals</Text>
-            <FlatList
-                data={data}
-                renderItem={renderItem}
-                keyExtractor={item => item.id.toString()}
-            />
-        </View>
-    );
+
+     return (
+            <View style={styles.container}>
+                <Text style={styles.title}>Pending Approvals</Text>
+                {/* Check if orders is empty */}
+                {data.length === 0 ? (
+                    <View style={styles.noOrdersContainer}>
+                        <Text style={styles.noOrdersText}>No Pending approvals</Text>
+                        <Text style={styles.noOrdersSubText}>All retailers have been approved</Text>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={data}
+                        renderItem={renderItem}
+                        keyExtractor={item => item.id.toString()}
+                    />
+                )}
+            </View>
+        );
 }
 
 export default PendingApprovalsScreen;
@@ -94,6 +102,12 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: '#f5f7fa',
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        marginBottom: 20,
+        color: '#343a40',
     },
     header: {
         fontSize: 24,
@@ -139,5 +153,28 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    noOrdersContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 30,
+        padding: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ced4da',
+        shadowOpacity: 0.1,
+        shadowColor: '#000',
+        elevation: 3,
+    },
+    noOrdersText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#6c757d',
+    },
+    noOrdersSubText: {
+        fontSize: 16,
+        color: '#6c757d',
+        marginTop: 8,
     },
 });

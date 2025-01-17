@@ -5,7 +5,9 @@ import { useNavigation } from '@react-navigation/native';
 import config from "../../config";
 
 const ProductCard = ({ item }) => {
-    const userData = useSelector((state) => state.user);
+    const loggedInUserData = useSelector((state) => state.user);
+    console.log("loggedInUserDetails in productCard ::: ", loggedInUserData);
+    // const userData = loggedInUserData.user;
     const navigation = useNavigation();
     const [quantity, setQuantity] = useState(0);
 
@@ -20,7 +22,7 @@ const ProductCard = ({ item }) => {
     };
 
     const handleAddToCart = async () => {
-        if (!userData) {
+        if (!loggedInUserData.user) {
             Alert.alert(
                 "Login Required",
                 "Please log in before adding items to your cart.",
@@ -37,7 +39,7 @@ const ProductCard = ({ item }) => {
         if (quantity > 0) {
             try {
                 const requestBody = {
-                    userId: userData.userId,
+                    userId: loggedInUserData.user.userId,
                     productId: item.id,
                     quantity: quantity,
                     action: 'ADD'

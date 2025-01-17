@@ -4,19 +4,25 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import config from "../../config";
 
-const CartCard = ({ product, productQuantity }) => {
-    const userData = useSelector((state) => state.user);
+const CartCard = ({ product, productQuantity, onQuantityChange }) => {
+    const loggedInUserData = useSelector((state) => state.user);
+    console.log("loggedInUserDetails in productCard ::: ", loggedInUserData);
+    const userData = loggedInUserData.user;
+    
     const navigation = useNavigation();
     const [quantity, setQuantity] = useState(productQuantity || 0);
 
     const handleAdd = () => {
-        setQuantity(prevQuantity => prevQuantity + 1);
+        const newQuantity = quantity + 1;
+        setQuantity(newQuantity);
+        onQuantityChange(product.productId, newQuantity);  // Pass updated quantity to parent
     };
 
     const handleRemove = () => {
-        
         if (quantity > 0) {
-            setQuantity(prevQuantity => prevQuantity - 1);
+            const newQuantity = quantity - 1;
+            setQuantity(newQuantity);
+            onQuantityChange(product.productId, newQuantity);  // Pass updated quantity to parent
         }
     };
 

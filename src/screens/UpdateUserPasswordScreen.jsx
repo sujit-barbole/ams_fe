@@ -6,14 +6,17 @@ import { useNavigation } from '@react-navigation/native';
 import config from "../../config";
 
 const UpdateUserPasswordScreen = () => {
-    const userData = useSelector((state) => state.user);
+    const loggedInUserData = useSelector((state) => state.user);
+    const userData = loggedInUserData.user;
+    console.log("updateUserPassword screen userdata :::::", userData);
     const navigation = useNavigation();
     
+    const [currentPassword, setCurrentPassword] = useState('');
     const [password, setPassword] = useState('');
     const [confirmedPassword, setConfirmedPassword] = useState('');
 
     const handleUpdate = async () => {
-        if (!password || !confirmedPassword) {
+        if (!currentPassword || !password || !confirmedPassword) {
             Alert.alert("Error", "Please fill in all fields.");
             return;
         }
@@ -24,24 +27,25 @@ const UpdateUserPasswordScreen = () => {
         }
     
         const requestBody = {
-            password,
-            confirmedPassword,
+            oldPassword: currentPassword,
+            newPassword: password, // Sending the new password as the field for update
         };
+        console.log("user data in updateuserpassword screen ::::: ", userData);
         const userId = userData.userId;
-        const requestUrl = config.API_URL+'/ams/v1/user/update/'+ userId;
+        const requestUrl = config.API_URL+'/ams/v1/user/changePassword/'+ userId;
         console.log("Update Password Request URL: ", requestUrl);
         console.log("Update Password Request Body:", JSON.stringify(requestBody));
         try {
-            const response = await fetch(url, {
-                method: 'PATCH',
+            const response = await fetch(requestUrl, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestBody),
             });
     
-            const data = await response.json();
-    
+            const data = await response.text();
+            console.log("updateuserpassword screen response :::::", data);
             if (response.ok) {
                 Alert.alert(
                     "Update Successful",
@@ -65,6 +69,14 @@ const UpdateUserPasswordScreen = () => {
             <LinearGradient colors={['#f5f7fa', '#c3cfe2']} style={styles.innerContainer}>
                 <ScrollView contentContainerStyle={styles.scrollView} keyboardShouldPersistTaps="handled">
                     <Text style={styles.title}>Change Password</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Current Password"
+                        value={currentPassword}
+                        onChangeText={setCurrentPassword}
+                        secureTextEntry
+                        onSubmitEditing={Keyboard.dismiss}
+                    />
                     <TextInput
                         style={styles.input}
                         placeholder="New Password"

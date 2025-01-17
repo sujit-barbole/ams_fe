@@ -24,8 +24,8 @@ import config from "../../config";
 
 const AddNewProductScreen = () => {
     const navigation = useNavigation();
-    const userData = useSelector((state) => state.user);
-
+    const loggedInUserData = useSelector((state) => state.user);
+    const userData = loggedInUserData.user;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [brand, setBrand] = useState('');
@@ -118,6 +118,7 @@ const AddNewProductScreen = () => {
             });
 
             const data = await response.json();
+            console.log("Add new product response ::: ", data);
             if (response.ok) {
                 Alert.alert("Product Added Successfully", "", [{ text: "OK", onPress: resetFields }]);
             } else {

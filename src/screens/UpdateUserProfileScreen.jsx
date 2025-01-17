@@ -6,9 +6,10 @@ import { useNavigation } from '@react-navigation/native';
 import config from "../../config";
 
 const UpdateUserProfileScreen = () => {
-    const userData = useSelector((state) => state.user);
+    const loggedInUserData = useSelector((state) => state.user);
+    const userData = loggedInUserData.user;
     const navigation = useNavigation();
-    
+    console.log("user data in updateuserprofile screen ::::: ", userData);
     // Initialize state with user data
     const [name, setName] = useState(userData.name);
     const [userName, setUserName] = useState(userData.userName);
@@ -48,7 +49,7 @@ const UpdateUserProfileScreen = () => {
         console.log("Update profile Request URL: ", requestUrl);
         console.log("Update profile Request Body:", JSON.stringify(requestBody));
         try {
-            const response = await fetch(url, {
+            const response = await fetch(requestUrl, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,7 +58,7 @@ const UpdateUserProfileScreen = () => {
             });
     
             const data = await response.json();
-    
+            console.log("updateuserprofile screen response :::::", data);
             if (response.ok) {
                 Alert.alert(
                     "Update Successful",

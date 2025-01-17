@@ -18,7 +18,7 @@ const RegisterScreen = () => {
     const [password, setPassword] = useState('');
     const [confirmedPassword, setConfirmedPassword] = useState('');
     const [role, setRole] = useState('Retailer');
-    const [dealerId, setDealerId] = useState(6);
+    const [dealerId, setDealerId] = useState(config.DEALER_ID);
 
     const handleRegister = async () => {
         if (!name || !phone || !userName || !street || !city || !state || !pinCode || !email || !password || !confirmedPassword) {
@@ -52,6 +52,7 @@ const RegisterScreen = () => {
         const requestUrl = config.API_URL+'/ams/v1/user/register';
         console.log("Register Request URL: ", requestUrl);
         console.log("Register Request Body:", JSON.stringify(requestBody));
+        console.log("dealerId: ", dealerId);
     
         try {
             const response = await fetch(requestUrl, {
@@ -85,7 +86,7 @@ const RegisterScreen = () => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}>
             <LinearGradient colors={['#f5f7fa', '#c3cfe2']} style={styles.innerContainer}>
-            <ShopHeader/>
+            {/* <ShopHeader /> */}
                 <ScrollView contentContainerStyle={styles.scrollView} keyboardShouldPersistTaps="handled">
                     <Text style={styles.title}>Register</Text>
                     <TextInput

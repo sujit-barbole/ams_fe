@@ -19,6 +19,7 @@ import ShoppingCartScreen from './src/screens/ShoppingCartScreen .jsx';
 import AddNewProductScreen from './src/screens/AddNewProductScreen.jsx';
 import PendingApprovalsScreen from './src/screens/PendingApprovalsScreen.jsx';
 import PendingOrdersScreen from './src/screens/PendingOrdersScreen.jsx';
+import AllActiveUsersScreen from './src/screens/AllActiveUsersScreen.jsx';
 import { setUser } from './src/redux/userSlice'; 
 import AddBrandCategoryScreen from './src/screens/AddBrandCategoryScreen.jsx';
 import config from './config/index.js';
@@ -44,21 +45,23 @@ const MainStack = () => (
     <Stack.Screen name="PendingApprovals" component={PendingApprovalsScreen} options={{ headerShown: false }} />
     <Stack.Screen name="PendingOrders" component={PendingOrdersScreen} options={{ headerShown: false }} />
     <Stack.Screen name="AddBrandCategory" component={AddBrandCategoryScreen} options={{headerShown: false}} />
+    <Stack.Screen name="AllActiveUsers" component={AllActiveUsersScreen} options={{headerShown: false}} />
   </Stack.Navigator>
 );
 
 // In your App component
 const App = () => {
   const userData = useSelector((state) => state.user);
+  console.log("App.jsx userData ::: ", userData);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
 
   
-const navigateToCartData = async (navigation) => {
+ const navigateToCartData = async (navigation) => {
   setLoading(true);
   try {
-    const requestUrl = config.API_URL+'/ams/v1/user/cart/items/'+ userData.userId;
+    const requestUrl = config.API_URL+'/ams/v1/user/cart/items/'+ userData.user.userId;
     console.log("fetching cart data....")
     console.log("Fetch user cart data Request URL: ", requestUrl);
       const response = await fetch(requestUrl, {
@@ -67,8 +70,8 @@ const navigateToCartData = async (navigation) => {
               'Content-Type': 'application/json',
           },
       });
-      console.log("got cart data....")
       const data = await response.json();
+      console.log("cart data in app.jsx ::: ", data);
       if (data) {
         console.log("navigating to shopping cart screen")
         navigation.navigate('ShoppingCart', { data }); // Pass the fetched data to ShoppingCartScreen
@@ -170,6 +173,7 @@ const navigateToCartData = async (navigation) => {
       <TouchableOpacity
         {...props}
         onPress={() => {
+          console.log("userData in APP.jsx ::: ", userData);
           if (!userData) {
             navigation.navigate('Auth', { screen: 'Login' });
           } else {
@@ -220,13 +224,15 @@ const RootApp = () => {
 export default function Main() {
   useEffect(() => {
       const loadUserData = async () => {
+        console.log("in loadUserData...")
           try {
               const loginDetails = await AsyncStorage.getItem('user');
-              const userData = loginDetails.user;
-              console.log("Loaded user data from store: ", !!userData); // Log the retrieved data
-              if (userData) {
-                  const parsedUserData = JSON.parse(userData);
-                  store.dispatch(setUser(parsedUserData)); // Restore user state
+              console.log("loginDetails ::: ", loginDetails)
+              if (loginDetails) {
+                  const parsedLoginDetails = JSON.parse(loginDetails);
+                  const userData = parsedLoginDetails.user;
+                  console.log("Loaded user data from store: ", userData); // Log the retrieved data
+                  store.dispatch(setUser(userData)); // Restore user state
                   //console.log("User state set in store:", parsedUserData); // Log the set state
               }
           } catch (error) {
@@ -244,5 +250,4 @@ export default function Main() {
           </NavigationContainer>
       </Provider>
   );
-}      
-
+}  

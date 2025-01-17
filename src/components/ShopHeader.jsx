@@ -5,10 +5,10 @@ const ShopHeader = () => {
     return (
         <View style={styles.headerContainer}>
             <Image
-                source={require('../assets/demoImage.png')} // Replace with your logo path
+                source={require('../assets/bharadiyaAgencyLogo.png')} // Replace with your logo path
                 style={styles.logo}
             />
-            <Text style={styles.shopName}>Your Shop Name</Text>
+            <Text style={styles.shopName}>Bharadiya Agency</Text>
         </View>
     );
 };
@@ -18,8 +18,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logo: {
-        width: 40, // Adjust size as needed
-        height: 40,
+        width: 70, // Adjust size as needed
+        height: 70,
         borderRadius: 50,
         marginRight: 10,
     },

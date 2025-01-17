@@ -30,15 +30,16 @@ const AddBrandCategoryScreen = () => {
     const [category, setCategory] = useState('');
     const [brands, setBrands] = useState([]);
     const [selectedBrand, setSelectedBrand] = useState(null);
-
+    const [refreshBrands, setRefreshBrands] = useState(false);
 
     useEffect(() => {
         const loadUserData = async () => {
             const storedUserData = await AsyncStorage.getItem('user');
             if (storedUserData) {
                 const parsedUserData = JSON.parse(storedUserData);
+                console.log("AddBrandCategoryScreen user data ::: ", parsedUserData.user);
                 console.log("setting userData in state...")
-                setUserData(parsedUserData);
+                setUserData(parsedUserData.user);
             }
         };
 
@@ -54,12 +55,13 @@ const AddBrandCategoryScreen = () => {
             if (!userData || !userData.userId) return;
             try {
                 const requestUrl = config.API_URL + '/ams/v1/user/product/brands/' + userData.userId;
-                console.log("Fetch All Brands and categories Url: "+ requestUrl);
+                console.log("Fetch All Brands and categories Url ::: "+ requestUrl);
                 const response = await fetch(requestUrl);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
+                console.log("Fetch All Brands and categories Response ::: "+ JSON.stringify(response));
                 setBrands(data);
             } catch (error) {
                 console.error('Error fetching brands and categories:', error);
@@ -68,7 +70,7 @@ const AddBrandCategoryScreen = () => {
         };
 
         fetchBrandsAndCategories();
-    }, [userData]);
+    }, [userData, refreshBrands]);
 
     const resetFields = () => {
         setName('');
@@ -88,11 +90,11 @@ const AddBrandCategoryScreen = () => {
 
         const requestBody = {
             name,
-            dealerId: userData.userId
+            dealerId: config.DEALER_UID
         };
         const requestUrl = config.API_URL+'/ams/v1/user/brand';
-        console.log("Add brand Request URL: ", requestUrl);
-        console.log("Request Body: ", requestBody)
+        console.log("Add brand Request URL ::: ", requestUrl);
+        console.log("Add brand Request Body ::: ", requestBody)
         try {
             const response = await fetch(requestUrl, {
                 method: 'POST',
@@ -103,9 +105,11 @@ const AddBrandCategoryScreen = () => {
             });
 
             const data = await response.json();
-            console.log(response)
+            console.log("Add brand Response ::: ", response)
             if (response.ok) {
                 Alert.alert("Brand Added Successfully", "", [{ text: "OK", onPress: resetFields }]);
+                console.log("Calling fetchBrandsAndCategories after adding new brand..")
+                setRefreshBrands(true);
             } else {
                 Alert.alert("Error", data.message || "Failed to add Brand");
             }
@@ -180,7 +184,7 @@ const AddBrandCategoryScreen = () => {
                     </TouchableOpacity>
                 </ScrollView>
                 <ScrollView contentContainerStyle={styles.scrollView} keyboardShouldPersistTaps="handled">
-                    <Text style={styles.title}>Add Brand</Text>
+                    <Text style={styles.title}>Add Category</Text>
                     {/* <View style={styles.inputWrapper}>
                         <RNPickerSelect
                             onValueChange={setBrand}

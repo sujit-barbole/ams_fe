@@ -50,7 +50,7 @@ const PendingOrdersScreen = ({ route }) => {
     const markOrder = async (dealerId, updateRequest, orderId) => {
         setLoading(true);
         try {
-            const requestUrl = `${config.API_URL}/ams/v1/user/order/${dealerId}/`;  // Adjusting the endpoint according to the controller
+            const requestUrl = `${config.API_URL}/ams/v1/user/order/${dealerId}/update/status`;  // Adjusting the endpoint according to the controller
             const response = await fetch(requestUrl, {
                 method: 'POST',
                 headers: {
@@ -58,7 +58,9 @@ const PendingOrdersScreen = ({ route }) => {
                 },
                 body: JSON.stringify(updateRequest),  // Sending the full updateRequest body
             });
-    
+            console.log("Request url from pendingOrdersScreen ::: ", requestUrl);
+            console.log("Request body from pendingOrdersScreen ::: ", updateRequest);
+            console.log("Response from pendingOrdersScreen ::: ", response);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
@@ -104,10 +106,10 @@ const PendingOrdersScreen = ({ route }) => {
                 {/* Conditionally render the buttons based on the order's status */}
                 {showButtons && (
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => handleDeclineOrder(item.retailer.userId, item.orderId)} disabled={loading}>
+                        <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={() => handleDeclineOrder(config.DEALER_UID, item.orderId)} disabled={loading}>
                             <Text style={styles.buttonText}>Decline Order</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.button, styles.completeButton]} onPress={() => handleCompleteOrder(item.retailer.userId, item.orderId)} disabled={loading}>
+                        <TouchableOpacity style={[styles.button, styles.completeButton]} onPress={() => handleCompleteOrder(config.DEALER_UID, item.orderId)} disabled={loading}>
                             <Text style={styles.buttonText}>Complete Order</Text>
                         </TouchableOpacity>
                     </View>
@@ -119,13 +121,21 @@ const PendingOrdersScreen = ({ route }) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Pending Orders</Text>
-            <FlatList
-                data={orders}  // Use the updated orders state
-                renderItem={renderOrderItem}
-                keyExtractor={(item) => `${item.orderId}`} // Ensure unique key based on orderId
-                contentContainerStyle={styles.listContainer}
-            />
+            <Text style={styles.title}>Orders</Text>
+            {/* Check if orders is empty */}
+            {orders.length === 0 ? (
+                <View style={styles.noOrdersContainer}>
+                    <Text style={styles.noOrdersText}>No Orders</Text>
+                    <Text style={styles.noOrdersSubText}>All your orders have been processed</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={orders}  // Use the updated orders state
+                    renderItem={renderOrderItem}
+                    keyExtractor={(item) => `${item.orderId}`} // Ensure unique key based on orderId
+                    contentContainerStyle={styles.listContainer}
+                />
+            )}
         </View>
     );
 };
@@ -185,36 +195,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
         color: '#495057',
     },
-    orderItem: {
-        fontSize: 14,
-        marginLeft: 10,
-        color: '#212529',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 10,
-    },
-    button: {
-        flex: 1,
-        padding: 12,
-        marginHorizontal: 5,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    cancelButton: {
-        backgroundColor: '#dc3545',
-    },
-    completeButton: {
-        backgroundColor: '#28a745',
-    },
-    buttonText: {
-        color: '#ffffff',
-        fontWeight: 'bold',
-    },
-    loadingIndicator: {
-        marginTop: 10,
-    },
     orderItemRow: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -239,5 +219,53 @@ const styles = StyleSheet.create({
     productQuantity: {
         fontSize: 14,
         color: '#6c757d',
+    },
+    buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+    },
+    button: {
+        flex: 1,
+        padding: 12,
+        marginHorizontal: 5,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    cancelButton: {
+        backgroundColor: '#3399ff',
+    },
+    completeButton: {
+        backgroundColor: '#3399ff',
+    },
+    buttonText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+    },
+    loadingIndicator: {
+        marginTop: 10,
+    },
+    noOrdersContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 30,
+        padding: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ced4da',
+        shadowOpacity: 0.1,
+        shadowColor: '#000',
+        elevation: 3,
+    },
+    noOrdersText: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#6c757d',
+    },
+    noOrdersSubText: {
+        fontSize: 16,
+        color: '#6c757d',
+        marginTop: 8,
     },
 });
